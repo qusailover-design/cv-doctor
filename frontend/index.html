@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="title">Najahni | AI CV & Job Matcher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #FDFBF8;
+            color: #1a202c;
+        }
+        .rtl-font { font-family: 'Cairo', sans-serif; }
+        .ltr-font { font-family: 'Inter', sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .btn-active {
+            background-color: #0d9488 !important;
+            color: white !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF8]">
+
+    <header class="sticky top-0 bg-[#FDFBF8]/80 backdrop-blur-sm z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-teal-700" data-key="brandName">Najahni.<span class="text-amber-500">ai</span></a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="text-gray-600 hover:text-teal-600" data-key="navFeatures">Features</a>
+                <a href="#dashboard" class="text-gray-600 hover:text-teal-600" data-key="navDashboard">Market Insights</a>
+                <a href="#pricing" class="text-gray-600 hover:text-teal-600" data-key="navPricing">Pricing</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="lang-toggle" class="text-sm font-semibold text-gray-500 hover:text-teal-600 px-3 py-1 border rounded-full">
+                    <span class="lang-en">العربية</span>
+                    <span class="lang-ar hidden">English</span>
+                </button>
+                <a href="#" class="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors" data-key="navCTA">Get Started</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="container mx-auto px-6 py-16 md:py-24 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-gray-800" data-key="heroTitle">Land Your Dream Job in Jordan</h1>
+            <p class="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto mb-8" data-key="heroSubtitle">Our AI analyzes your CV, enhances it for Jordanian employers, and matches you with the perfect job opportunities. Freemium services available.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button id="upload-btn" class="bg-teal-600 text-white px-8 py-4 rounded-full hover:bg-teal-700 transition-transform transform hover:scale-105 shadow-lg" data-key="heroCTA">Analyze My CV for Free</button>
+                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.docx">
+                <a href="#features" class="bg-white text-teal-600 px-8 py-4 rounded-full border border-teal-200 hover:bg-teal-50 transition-transform transform hover:scale-105 shadow-lg" data-key="heroSecondaryCTA">Learn More</a>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="howTitle">Your Path to Success in 4 Simple Steps</h2>
+                    <p class="text-gray-500 mt-2" data-key="howSubtitle">From CV upload to job offer, we streamline your career journey.</p>
+                </div>
+                <div class="grid md:grid-cols-4 gap-8 text-center relative">
+                    <div class="absolute top-1/2 left-0 w-full h-px bg-teal-200 hidden md:block" style="transform: translateY(-50%); z-index: 0;"></div>
+                    <div class="flex flex-col items-center z-10">
+                        <div class="bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4 border-4 border-white">1</div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-700" data-key="step1Title">Upload Your CV</h3>
+                        <p class="text-gray-500" data-key="step1Desc">Securely upload your current resume in any format.</p>
+                    </div>
+                    <div class="flex flex-col items-center z-10">
+                        <div class="bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4 border-4 border-white">2</div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-700" data-key="step2Title">Get AI Analysis</h3>
+                        <p class="text-gray-500" data-key="step2Desc">Receive instant, detailed feedback to improve your CV.</p>
+                    </div>
+                    <div class="flex flex-col items-center z-10">
+                        <div class="bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4 border-4 border-white">3</div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-700" data-key="step3Title">Discover Matched Jobs</h3>
+                        <p class="text-gray-500" data-key="step3Desc">Our AI finds the best job openings in Jordan for you.</p>
+                    </div>
+                    <div class="flex flex-col items-center z-10">
+                        <div class="bg-teal-100 text-teal-700 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-4 border-4 border-white">4</div>
+                        <h3 class="text-xl font-bold mb-2 text-gray-700" data-key="step4Title">Apply with Confidence</h3>
+                        <p class="text-gray-500" data-key="step4Desc">Use your enhanced CV to apply and get noticed by employers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-16 md:py-24">
+             <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="featuresTitle">Powerful Tools to Boost Your Career</h2>
+                    <p class="text-gray-500 mt-2" data-key="featuresSubtitle">Everything you need to stand out in the Jordanian job market.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-bold mb-3 text-teal-700" data-key="feature1Title">AI CV Doctor</h3>
+                        <p class="text-gray-600" data-key="feature1Desc">Get an in-depth analysis of your CV, identifying weaknesses and suggesting improvements based on what Jordanian hiring managers look for. Keywords, formatting, and impact are all optimized.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-bold mb-3 text-teal-700" data-key="feature2Title">Smart Job Matching</h3>
+                        <p class="text-gray-600" data-key="feature2Desc">Our algorithm goes beyond keywords. It understands your skills, experience, and career goals to connect you with job openings where you are most likely to succeed and thrive.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <h3 class="text-2xl font-bold mb-3 text-teal-700" data-key="feature3Title">Localized Enhancements</h3>
+                        <p class="text-gray-600" data-key="feature3Desc">We provide suggestions tailored specifically for the Jordanian market, including industry-specific terminology and cultural nuances, in both Arabic and English.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="dashboard" class="bg-white py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="dashboardTitle">Live Jordanian Job Market Insights</h2>
+                    <p class="text-gray-500 mt-2" data-key="dashboardSubtitle">Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform, helping you understand market trends and demand.</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-lg shadow-inner">
+                    <div class="flex justify-center flex-wrap gap-2 mb-8">
+                        <button class="filter-btn btn-active px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="all" data-key="filterAll">All Sectors</button>
+                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="tech" data-key="filterTech">Tech & IT</button>
+                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="health" data-key="filterHealth">Healthcare</button>
+                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="finance" data-key="filterFinance">Finance</button>
+                    </div>
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart1Title">Top In-Demand Industries</h3>
+                            <div class="chart-container">
+                                <canvas id="industriesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md">
+                            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart2Title">Jobs by Experience Level</h3>
+                            <div class="chart-container">
+                                <canvas id="experienceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="pricing" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="pricingTitle">Choose Your Plan</h2>
+                    <p class="text-gray-500 mt-2" data-key="pricingSubtitle">Start for free and upgrade when you're ready for more advanced features.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="border border-gray-200 rounded-xl p-8 flex flex-col">
+                        <h3 class="text-2xl font-bold" data-key="plan1Name">Freemium</h3>
+                        <p class="text-gray-500 mb-4" data-key="plan1Desc">Perfect for getting started.</p>
+                        <p class="text-4xl font-bold mb-6" data-key="plan1Price">Free</p>
+                        <ul class="space-y-3 mb-8 flex-grow">
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat1">Basic CV Score</span></li>
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat2">Limited Job Matches (5/week)</span></li>
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat3">General CV Suggestions</span></li>
+                        </ul>
+                        <a href="#" class="w-full text-center bg-gray-200 text-gray-800 font-bold py-3 rounded-full hover:bg-gray-300" data-key="plan1CTA">Sign Up for Free</a>
+                    </div>
+                    <div class="border-2 border-teal-500 rounded-xl p-8 flex flex-col relative bg-white">
+                        <span class="absolute top-0 -translate-y-1/2 bg-teal-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-key="plan2Popular">Most Popular</span>
+                        <h3 class="text-2xl font-bold text-teal-700" data-key="plan2Name">Premium</h3>
+                        <p class="text-gray-500 mb-4" data-key="plan2Desc">Unlock your full potential.</p>
+                        <p class="text-4xl font-bold mb-6" data-key="plan2Price">JOD 15 <span class="text-lg font-normal text-gray-500" data-key="plan2Cycle">/ month</span></p>
+                        <ul class="space-y-3 mb-8 flex-grow">
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan2Feat1">Detailed AI CV Analysis</span></li>
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan2Feat2">Unlimited Job Matches</span></li>
+                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan2Feat3">Tailored CV Keyword Suggestions</span></li>
+                             <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan2Feat4">Application Tracking</span></li>
+                        </ul>
+                        <a href="#" class="w-full text-center bg-teal-600 text-white font-bold py-3 rounded-full hover:bg-teal-700" data-key="plan2CTA">Go Premium</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p data-key="footerText">&copy; 2025 Najahni.ai. All rights reserved. Helping Jordan's talent shine.</p>
+        </div>
+    </footer>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800" data-key="modalTitle">Your CV Analysis</h2>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
+            </div>
+            <div id="modal-content" class="p-8">
+                <div id="loading-spinner" class="text-center py-12">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-teal-500"></div>
+                    <p class="mt-4 text-gray-600" data-key="modalLoading">Our AI is analyzing your CV... This may take a moment.</p>
+                </div>
+                <div id="analysis-results" class="hidden">
+                    <div class="text-center mb-8">
+                        <p class="text-gray-500 text-lg" data-key="modalScore">Overall Score</p>
+                        <p id="overall-score" class="text-7xl font-bold text-teal-600">88</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSummary">Professional Summary</h3>
+                            <p id="summary-text" class="text-gray-600 bg-gray-50 p-4 rounded-lg"></p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSuggestions">Actionable Suggestions</h3>
+                            <ul id="suggestions-list" class="list-disc list-inside space-y-2 text-gray-600 pl-4"></ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalKeywords">Keyword Analysis</h3>
+                            <p id="keywords-text" class="text-gray-600 bg-gray-50 p-4 rounded-lg"></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="error-message" class="hidden text-center py-12">
+                    <p class="text-red-600 font-bold text-xl" data-key="modalErrorTitle">An Error Occurred</p>
+                    <p id="error-text" class="text-gray-600 mt-2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: 'Najahni | AI CV & Job Matcher',
+                brandName: 'Najahni.<span class="text-amber-500">ai</span>',
+                navFeatures: 'Features',
+                navDashboard: 'Market Insights',
+                navPricing: 'Pricing',
+                navCTA: 'Get Started',
+                heroTitle: 'Land Your Dream Job in Jordan',
+                heroSubtitle: 'Our AI analyzes your CV, enhances it for Jordanian employers, and matches you with the perfect job opportunities. Freemium services available.',
+                heroCTA: 'Analyze My CV for Free',
+                heroSecondaryCTA: 'Learn More',
+                howTitle: 'Your Path to Success in 4 Simple Steps',
+                howSubtitle: 'From CV upload to job offer, we streamline your career journey.',
+                step1Title: 'Upload Your CV',
+                step1Desc: 'Securely upload your current resume in any format.',
+                step2Title: 'Get AI Analysis',
+                step2Desc: 'Receive instant, detailed feedback to improve your CV.',
+                step3Title: 'Discover Matched Jobs',
+                step3Desc: 'Our AI finds the best job openings in Jordan for you.',
+                step4Title: 'Apply with Confidence',
+                step4Desc: 'Use your enhanced CV to apply and get noticed by employers.',
+                featuresTitle: 'Powerful Tools to Boost Your Career',
+                featuresSubtitle: 'Everything you need to stand out in the Jordanian job market.',
+                feature1Title: 'AI CV Doctor',
+                feature1Desc: 'Get an in-depth analysis of your CV, identifying weaknesses and suggesting improvements based on what Jordanian hiring managers look for. Keywords, formatting, and impact are all optimized.',
+                feature2Title: 'Smart Job Matching',
+                feature2Desc: 'Our algorithm goes beyond keywords. It understands your skills, experience, and career goals to connect you with job openings where you are most likely to succeed and thrive.',
+                feature3Title: 'Localized Enhancements',
+                feature3Desc: 'We provide suggestions tailored specifically for the Jordanian market, including industry-specific terminology and cultural nuances, in both Arabic and English.',
+                dashboardTitle: 'Live Jordanian Job Market Insights',
+                dashboardSubtitle: 'Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform, helping you understand market trends and demand.',
+                filterAll: 'All Sectors',
+                filterTech: 'Tech & IT',
+                filterHealth: 'Healthcare',
+                filterFinance: 'Finance',
+                chart1Title: 'Top In-Demand Industries',
+                chart2Title: 'Jobs by Experience Level',
+                pricingTitle: 'Choose Your Plan',
+                pricingSubtitle: 'Start for free and upgrade when you\'re ready for more advanced features.',
+                plan1Name: 'Freemium',
+                plan1Desc: 'Perfect for getting started.',
+                plan1Price: 'Free',
+                plan1Feat1: 'Basic CV Score',
+                plan1Feat2: 'Limited Job Matches (5/week)',
+                plan1Feat3: 'General CV Suggestions',
+                plan1CTA: 'Sign Up for Free',
+                plan2Popular: 'Most Popular',
+                plan2Name: 'Premium',
+                plan2Desc: 'Unlock your full potential.',
+                plan2Price: 'JOD 15',
+                plan2Cycle: '/ month',
+                plan2Feat1: 'Detailed AI CV Analysis',
+                plan2Feat2: 'Unlimited Job Matches',
+                plan2Feat3: 'Tailored CV Keyword Suggestions',
+                plan2Feat4: 'Application Tracking',
+                plan2CTA: 'Go Premium',
+                footerText: '&copy; 2025 Najahni.ai. All rights reserved. Helping Jordan\'s talent shine.',
+                modalTitle: 'Your CV Analysis',
+                modalLoading: 'Our AI is analyzing your CV... This may take a moment.',
+                modalScore: 'Overall Score',
+                modalSummary: 'Professional Summary',
+                modalSuggestions: 'Actionable Suggestions',
+                modalKeywords: 'Keyword Analysis',
+                modalErrorTitle: 'An Error Occurred',
+            },
+            ar: {
+                title: 'نجحني | مدقق السيرة الذاتية ومطابق الوظائف بالذكاء الاصطناعي',
+                brandName: 'نجحني.<span class="text-amber-500">ai</span>',
+                navFeatures: 'الميزات',
+                navDashboard: 'بيانات السوق',
+                navPricing: 'الأسعار',
+                navCTA: 'ابدأ الآن',
+                heroTitle: 'احصل على وظيفة أحلامك في الأردن',
+                heroSubtitle: 'يقوم الذكاء الاصطناعي لدينا بتحليل سيرتك الذاتية وتحسينها لتناسب أصحاب العمل في الأردن، ويطابقك مع أفضل الفرص الوظيفية. تتوفر خدمات مجانية.',
+                heroCTA: 'حلل سيرتي الذاتية مجانًا',
+                heroSecondaryCTA: 'اعرف المزيد',
+                howTitle: 'طريقك إلى النجاح في 4 خطوات بسيطة',
+                howSubtitle: 'من تحميل السيرة الذاتية إلى عرض العمل، نسهل رحلتك المهنية.',
+                step1Title: 'ارفع سيرتك الذاتية',
+                step1Desc: 'قم بتحميل سيرتك الذاتية الحالية بأمان وبأي صيغة.',
+                step2Title: 'احصل على تحليل الذكاء الاصطناعي',
+                step2Desc: 'احصل على تقييم فوري ومفصل لتحسين سيرتك الذاتية.',
+                step3Title: 'اكتشف الوظائف المطابقة',
+                step3Desc: 'يجد الذكاء الاصطناعي لدينا أفضل الوظائف الشاغرة في الأردن لك.',
+                step4Title: 'قدم بثقة',
+                step4Desc: 'استخدم سيرتك الذاتية المحسّنة للتقديم ولفت انتباه أصحاب العمل.',
+                featuresTitle: 'أدوات قوية لتعزيز مسيرتك المهنية',
+                featuresSubtitle: 'كل ما تحتاجه للتميز في سوق العمل الأردني.',
+                feature1Title: 'مدقق السيرة الذاتية بالذكاء الاصطناعي',
+                feature1Desc: 'احصل على تحليل معمق لسيرتك الذاتية، يحدد نقاط الضعف ويقترح تحسينات بناءً على ما يبحث عنه مديرو التوظيف في الأردن. يتم تحسين الكلمات المفتاحية والتنسيق والتأثير.',
+                feature2Title: 'مطابقة ذكية للوظائف',
+                feature2Desc: 'الخوارزمية لدينا تتجاوز الكلمات المفتاحية. إنها تفهم مهاراتك وخبراتك وأهدافك المهنية لتربطك بالوظائف الشاغرة حيث من المرجح أن تنجح وتزدهر.',
+                feature3Title: 'تحسينات محلية',
+                feature3Desc: 'نقدم اقتراحات مصممة خصيصًا للسوق الأردني، بما في ذلك المصطلحات الخاصة بالصناعة والفروق الثقافية الدقيقة، باللغتين العربية والإنجليزية.',
+                dashboardTitle: 'بيانات حية لسوق العمل الأردني',
+                dashboardSubtitle: 'استكشف البيانات في الوقت الفعلي لاتخاذ قرارات مهنية مستنيرة. تعرض لوحة التحكم التفاعلية هذه القوة التحليلية لمنصتنا، مما يساعدك على فهم اتجاهات السوق والطلب.',
+                filterAll: 'جميع القطاعات',
+                filterTech: 'التكنولوجيا وتقنية المعلومات',
+                filterHealth: 'الرعاية الصحية',
+                filterFinance: 'المالية',
+                chart1Title: 'أكثر الصناعات طلبًا',
+                chart2Title: 'الوظائف حسب مستوى الخبرة',
+                pricingTitle: 'اختر خطتك',
+                pricingSubtitle: 'ابدأ مجانًا وقم بالترقية عندما تكون مستعدًا لميزات أكثر تقدمًا.',
+                plan1Name: 'مجانية',
+                plan1Desc: 'مثالية للبدء.',
+                plan1Price: 'مجاني',
+                plan1Feat1: 'تقييم أساسي للسيرة الذاتية',
+                plan1Feat2: 'مطابقات وظائف محدودة (5 / أسبوع)',
+                plan1Feat3: 'اقتراحات عامة للسيرة الذاتية',
+                plan1CTA: 'سجل مجانًا',
+                plan2Popular: 'الأكثر شيوعًا',
+                plan2Name: 'الاحترافية',
+                plan2Desc: 'أطلق العنان لإمكانياتك الكاملة.',
+                plan2Price: '15 دينار أردني',
+                plan2Cycle: '/ شهر',
+                plan2Feat1: 'تحليل مفصل للسيرة الذاتية بالذكاء الاصطناعي',
+                plan2Feat2: 'مطابقات وظائف غير محدودة',
+                plan2Feat3: 'اقتراحات كلمات مفتاحية مخصصة',
+                plan2Feat4: 'تتبع طلبات التوظيف',
+                plan2CTA: 'اشترك الآن',
+                footerText: '© 2025 نجحني.ai. جميع الحقوق محفوظة. نساعد مواهب الأردن على التألق.',
+                modalTitle: 'تحليل سيرتك الذاتية',
+                modalLoading: 'يقوم الذكاء الاصطناعي بتحليل سيرتك الذاتية... قد يستغرق هذا بعض الوقت.',
+                modalScore: 'التقييم العام',
+                modalSummary: 'الملخص المهني',
+                modalSuggestions: 'اقتراحات قابلة للتنفيذ',
+                modalKeywords: 'تحليل الكلمات المفتاحية',
+                modalErrorTitle: 'حدث خطأ',
+            }
+        };
+        let currentLang = 'en';
+        let industriesChart, experienceChart;
+        const langToggle = document.getElementById('lang-toggle');
+        const htmlEl = document.documentElement;
+        const updateChartTitles = () => {
+            const lang = currentLang;
+            const arFont = { family: "'Cairo', sans-serif", size: 14 };
+            const enFont = { family: "'Inter', sans-serif", size: 12 };
+            const fontConfig = lang === 'ar' ? arFont : enFont;
+            if (industriesChart && experienceChart) {
+                industriesChart.options.plugins.legend.labels.font = fontConfig;
+                experienceChart.options.plugins.legend.labels.font = fontConfig;
+                industriesChart.update();
+                experienceChart.update();
+            }
+        };
+        const setLanguage = (lang) => {
+            currentLang = lang;
+            const trans = translations[lang];
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (trans[key]) {
+                    el.innerHTML = trans[key];
+                }
+            });
+            if (lang === 'ar') {
+                htmlEl.lang = 'ar';
+                htmlEl.dir = 'rtl';
+                document.body.classList.add('rtl-font');
+                document.body.classList.remove('ltr-font');
+                document.querySelector('.lang-en').classList.add('hidden');
+                document.querySelector('.lang-ar').classList.remove('hidden');
+            } else {
+                htmlEl.lang = 'en';
+                htmlEl.dir = 'ltr';
+                document.body.classList.add('ltr-font');
+                document.body.classList.remove('rtl-font');
+                document.querySelector('.lang-en').classList.remove('hidden');
+                document.querySelector('.lang-ar').classList.add('hidden');
+            }
+            updateChartTitles();
+        };
+        langToggle.addEventListener('click', () => {
+            const newLang = currentLang === 'en' ? 'ar' : 'en';
+            setLanguage(newLang);
+        });
+        setLanguage('en');
+        const marketData = {
+            all: { industries: { labels: ['IT & Software', 'Healthcare', 'Banking & Finance', 'Engineering', 'Education'], data: [28, 22, 18, 15, 10] }, experience: { labels: ['Entry-Level (0-2)', 'Mid-Level (2-5)', 'Senior (5+)', 'Managerial'], data: [45, 30, 18, 7] } },
+            tech: { industries: { labels: ['Software Dev', 'Cybersecurity', 'Data Science', 'Cloud Computing', 'UI/UX Design'], data: [35, 25, 20, 12, 8] }, experience: { labels: ['Entry-Level', 'Mid-Level', 'Senior', 'Lead/Architect'], data: [40, 35, 20, 5] } },
+            health: { industries: { labels: ['Nursing', 'Pharmacy', 'Medical Tech', 'Specialist Dr.', 'Administration'], data: [30, 25, 18, 15, 12] }, experience: { labels: ['Junior/Resident', 'Practitioner', 'Senior', 'Consultant'], data: [35, 40, 15, 10] } },
+            finance: { industries: { labels: ['Accounting', 'Financial Analysis', 'Investment Banking', 'Auditing', 'FinTech'], data: [32, 28, 15, 13, 12] }, experience: { labels: ['Junior Analyst', 'Analyst', 'Senior Analyst', 'Manager'], data: [40, 30, 20, 10] } }
+        };
+        const chartColors = { bg: ['#14b8a6', '#f97316', '#3b82f6', '#8b5cf6', '#ec4899'], border: '#ffffff' };
+        const chartOptions = (title) => ({ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: "'Inter', 'Cairo', sans-serif" } } }, title: { display: false } }, });
+        const initCharts = () => {
+            const industriesCtx = document.getElementById('industriesChart')?.getContext('2d');
+            if (industriesCtx) {
+                industriesChart = new Chart(industriesCtx, { type: 'bar', data: { labels: marketData.all.industries.labels, datasets: [{ label: 'Number of Openings (in thousands)', data: marketData.all.industries.data, backgroundColor: chartColors.bg, borderColor: chartColors.border, borderWidth: 2 }] }, options: chartOptions('Top In-Demand Industries') });
+            }
+            const experienceCtx = document.getElementById('experienceChart')?.getContext('2d');
+            if (experienceCtx) {
+                experienceChart = new Chart(experienceCtx, { type: 'doughnut', data: { labels: marketData.all.experience.labels, datasets: [{ label: 'Job Distribution', data: marketData.all.experience.data, backgroundColor: chartColors.bg, borderColor: chartColors.border, borderWidth: 2 }] }, options: chartOptions('Jobs by Experience Level') });
+            }
+        };
+        const updateCharts = (filter) => {
+            const data = marketData[filter];
+            if (industriesChart) {
+                industriesChart.data.labels = data.industries.labels;
+                industriesChart.data.datasets[0].data = data.industries.data;
+                industriesChart.update();
+            }
+            if(experienceChart) {
+                experienceChart.data.labels = data.experience.labels;
+                experienceChart.data.datasets[0].data = data.experience.data;
+                experienceChart.update();
+            }
+        };
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => { button.addEventListener('click', () => { filterButtons.forEach(btn => btn.classList.remove('btn-active')); button.classList.add('btn-active'); const filter = button.getAttribute('data-filter'); updateCharts(filter); }); });
+        
+        window.onload = initCharts;
+
+        const uploadBtn = document.getElementById('upload-btn');
+        const cvUploadInput = document.getElementById('cv-upload');
+        const resultsModal = document.getElementById('results-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const analysisResults = document.getElementById('analysis-results');
+        const errorMessage = document.getElementById('error-message');
+        
+        const API_URL = 'http://127.0.0.1:5000/api/analyze';
+
+        uploadBtn.addEventListener('click', () => cvUploadInput.click());
+
+        cvUploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) analyzeCV(file);
+            event.target.value = null;
+        });
+
+        async function analyzeCV(file) {
+            resultsModal.classList.remove('hidden');
+            loadingSpinner.classList.remove('hidden');
+            analysisResults.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('cv', file);
+            formData.append('lang', currentLang);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Something went wrong on the server.');
+                }
+                
+                displayResults(data);
+
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('overall-score').textContent = data.overall_score || 'N/A';
+            document.getElementById('summary-text').textContent = data.summary || 'No summary provided.';
+            document.getElementById('keywords-text').textContent = data.keyword_analysis || 'No keyword analysis provided.';
+            
+            const suggestionsList = document.getElementById('suggestions-list');
+            suggestionsList.innerHTML = '';
+            if (data.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+                data.suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    suggestionsList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No suggestions provided.';
+                suggestionsList.appendChild(li);
+            }
+            
+            loadingSpinner.classList.add('hidden');
+            analysisResults.classList.remove('hidden');
+        }
+
+        function displayError(message) {
+            document.getElementById('error-text').textContent = message;
+            loadingSpinner.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', () => resultsModal.classList.add('hidden'));
+        resultsModal.addEventListener('click', (event) => {
+            if (event.target === resultsModal) {
+                resultsModal.classList.add('hidden');
+            }
+        });
+    </script>
+
+</body>
+</html>
+
