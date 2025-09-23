@@ -55,7 +55,7 @@
                 <p class="text-gray-500 mt-2" data-key="dashboardSubtitle">Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform.</p>
             </div>
             <div class="bg-slate-50 p-6 rounded-lg shadow-inner">
-                <div class="flex justify-center flex-wrap gap-2 mb-8">
+                 <div class="flex justify-center flex-wrap gap-2 mb-8">
                     <button class="filter-btn btn-active px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="all" data-key="filterAll">All Sectors</button>
                     <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="tech" data-key="filterTech">Tech & IT</button>
                     <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="health" data-key="filterHealth">Healthcare</button>
@@ -93,7 +93,7 @@
                     <a href="#hero" class="w-full text-center bg-teal-600 text-white font-bold py-3 rounded-full hover:bg-teal-700" data-key="plan1CTA">Get Started Now</a>
                 </div>
                 <div class="border border-gray-200 rounded-xl p-8 flex flex-col opacity-60">
-                    <span class="absolute top-0 -translate-y-1/2 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-key="plan2Popular">Coming Soon</span>
+                     <span class="absolute top-0 -translate-y-1/2 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-key="plan2Popular">Coming Soon</span>
                     <h3 class="text-2xl font-bold" data-key="plan2Name">Premium</h3>
                     <p class="text-gray-500 mb-4" data-key="plan2Desc">Unlock your full potential.</p>
                     <p class="text-4xl font-bold mb-6" data-key="plan2Price">$10 <span class="text-lg font-normal text-gray-500" data-key="plan2Cycle">/ month</span></p>
@@ -278,10 +278,8 @@
         suggestionsList.innerHTML = '';
         if (data.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
             data.suggestions.forEach(suggestion => {
-                // This check prevents '[object Object]'
-                const suggestionText = (typeof suggestion === 'object' && suggestion !== null) ? JSON.stringify(suggestion) : suggestion;
                 const li = document.createElement('li');
-                li.textContent = suggestionText;
+                li.textContent = suggestion;
                 suggestionsList.appendChild(li);
             });
         } else {

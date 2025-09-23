@@ -66,8 +66,7 @@ def analyze_cv():
     if not cv_text or len(cv_text) < 50:
         return jsonify({"error": "Could not extract sufficient text."}), 400
 
-    # --- THIS IS THE CRITICAL FIX: A MORE PRECISE PROMPT ---
-    # We are asking for simple strings in the suggestions array, which fixes the [object Object] bug.
+    # This is the stable, high-quality prompt.
     if lang == 'ar':
         prompt = f"""
         تصرف كخبير تدريب مهني ومدير موارد بشرية. حلل نص السيرة الذاتية التالي بعناية.
@@ -109,10 +108,8 @@ def analyze_cv():
         clean_json_str = raw_text[json_start:json_end]
         parsed_json = json.loads(clean_json_str)
         
-        # --- Defensive check to ensure suggestions are strings ---
         # This prevents the '[object Object]' error at the source.
         if 'suggestions' in parsed_json and isinstance(parsed_json['suggestions'], list):
-            # Ensure every item in the list is a simple string.
             parsed_json['suggestions'] = [str(item) for item in parsed_json['suggestions']]
             
         return jsonify(parsed_json)
@@ -125,25 +122,4 @@ def analyze_cv():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-```
-
----
-
-### **Step 2: The Final Upload**
-
-Now we will send this definitive fix to GitHub.
-
-1.  Open your **Command Prompt** terminal in VS Code.
-2.  Make sure you are in the main `cv-doctor` folder.
-3.  Run these three commands one by one:
-
-    ```cmd
-    git add .
-    ```
-    ```cmd
-    git commit -m "fix: Revert to stable backend with high-quality prompt"
-    ```
-    ```cmd
-    git push
-    
 
