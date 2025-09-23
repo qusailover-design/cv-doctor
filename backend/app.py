@@ -1,4 +1,4 @@
-# app.py - A simplified, stable version without the PDF feature.
+# app.py - The final, stable, high-quality analysis version.
 import os
 import io
 import json
@@ -66,11 +66,37 @@ def analyze_cv():
     if not cv_text or len(cv_text) < 50:
         return jsonify({"error": "Could not extract sufficient text."}), 400
 
-    # Generalized prompts
+    # --- THIS IS THE CRITICAL FIX: A MORE PRECISE PROMPT ---
     if lang == 'ar':
-        prompt = f"""تصرف كخبير تدريب مهني ومدير موارد بشرية. حلل نص السيرة الذاتية التالي بعناية. يجب أن تكون إجابتك عبارة عن كائن JSON صالح واحد فقط. يجب أن يحتوي كائن JSON على هذه المفاتيح: "overall_score", "summary", "suggestions", "keyword_analysis". نص السيرة الذاتية: --- {cv_text} ---"""
+        prompt = f"""
+        تصرف كخبير تدريب مهني ومدير موارد بشرية. حلل نص السيرة الذاتية التالي بعناية.
+        يجب أن تكون إجابتك عبارة عن كائن JSON صالح واحد فقط.
+        يجب أن يحتوي كائن JSON على هذه المفاتيح:
+        - "overall_score": عدد صحيح بين 0 و 100.
+        - "summary": سلسلة نصية تحتوي على ملخص موجز.
+        - "suggestions": مصفوفة من 3 إلى 5 **سلاسل نصية بسيطة**. كل سلسلة يجب أن تكون اقتراحًا.
+        - "keyword_analysis": سلسلة نصية تشرح استخدام الكلمات المفتاحية.
+
+        نص السيرة الذاتية:
+        ---
+        {cv_text}
+        ---
+        """
     else:
-        prompt = f"""Act as an expert career coach and HR manager. Analyze the following CV text. Your response MUST be ONLY a single, valid JSON object with these keys: "overall_score", "summary", "suggestions", "keyword_analysis". CV Text: --- {cv_text} ---"""
+        prompt = f"""
+        Act as an expert career coach and HR manager. Analyze the following CV text.
+        Your response MUST be ONLY a single, valid JSON object.
+        The JSON object must have these keys:
+        - "overall_score": An integer between 0 and 100.
+        - "summary": A string containing a concise summary.
+        - "suggestions": An array of 3 to 5 **simple strings**. Each string must be a suggestion.
+        - "keyword_analysis": A string explaining keyword usage.
+        
+        CV Text:
+        ---
+        {cv_text}
+        ---
+        """
 
     try:
         response = model.generate_content(prompt)
@@ -90,4 +116,25 @@ def analyze_cv():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+```
+
+---
+
+### **Step 2: The Final Upload**
+
+Now we will send this final, high-quality fix to GitHub.
+
+1.  Open your **Command Prompt** terminal in VS Code.
+2.  Make sure you are in the main `cv-doctor` folder.
+3.  Run these three commands one by one:
+
+    ```cmd
+    git add .
+    ```
+    ```cmd
+    git commit -m "fix: Correct AI prompt to ensure simple string array for suggestions"
+    ```
+    ```cmd
+    git push
+    
 
