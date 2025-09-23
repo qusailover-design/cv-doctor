@@ -1,4 +1,4 @@
-# app.py - The main backend application file
+# app.py - The final, robust backend application file
 import os
 import io
 import json
@@ -10,26 +10,25 @@ import PyPDF2
 from docx import Document
 from fpdf import FPDF
 
-# Load environment variables from a .env file
 load_dotenv()
 
-# Configure the Gemini API with our key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
+# --- Configuration ---
+try:
+    genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+    model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
+except Exception as e:
+    print(f"FATAL: Could not configure GenerativeModel. Is GOOGLE_API_KEY set? Error: {e}")
+    # We don't exit here, but the model will be None, causing endpoints to fail gracefully.
+    model = None
 
-# Initialize Flask App and allow it to be called from our frontend
 app = Flask(__name__)
-CORS(app) # This enables cross-origin requests
+CORS(app)
 
-# --- Helper Functions to read CVs ---
+# --- Helper Functions ---
 def extract_text_from_pdf(file_stream):
     try:
         reader = PyPDF2.PdfReader(file_stream)
-        text = ""
-        for page in reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text
+        text = "".join(page.extract_text() for page in reader.pages if page.extract_text())
         return text
     except Exception as e:
         print(f"Error reading PDF: {e}")
@@ -38,17 +37,18 @@ def extract_text_from_pdf(file_stream):
 def extract_text_from_docx(file_stream):
     try:
         doc = Document(file_stream)
-        text = ""
-        for para in doc.paragraphs:
-            text += para.text + "\n"
+        text = "\n".join(para.text for para in doc.paragraphs)
         return text
     except Exception as e:
         print(f"Error reading DOCX: {e}")
         return ""
 
-# --- API Endpoint for CV Analysis ---
+# --- API Endpoints ---
 @app.route("/api/analyze", methods=["POST"])
 def analyze_cv():
+    if model is None:
+        return jsonify({"error": "AI model is not configured on the server."}), 500
+        
     if 'cv' not in request.files:
         return jsonify({"error": "No file part"}), 400
     
@@ -71,40 +71,11 @@ def analyze_cv():
     if not cv_text or len(cv_text) < 50:
         return jsonify({"error": "Could not extract sufficient text."}), 400
 
-    # --- Updated, Generalized Prompts ---
+    # Generalized prompts
     if lang == 'ar':
-        prompt = f"""
-        تصرف كخبير تدريب مهني ومدير موارد بشرية متخصص في سوق العمل.
-        حلل نص السيرة الذاتية التالي بعناية.
-
-        يجب أن تكون إجابتك عبارة عن كائن JSON صالح واحد فقط ولا شيء آخر.
-        يجب أن يحتوي كائن JSON على هذه المفاتيح وأنواع البيانات بالضبط:
-        - "overall_score": عدد صحيح بين 0 و 100.
-        - "summary": سلسلة نصية تحتوي على ملخص موجز من 2-3 جمل.
-        - "suggestions": مصفوفة من 3 إلى 5 سلاسل نصية، كل منها اقتراح عملي قابل للتنفيذ.
-        - "keyword_analysis": سلسلة نصية تشرح استخدام الكلمات المفتاحية.
-
-        نص السيرة الذاتية:
-        ---
-        {cv_text}
-        ---
-        """
-    else: # Default to English
-        prompt = f"""
-        Act as an expert career coach and HR manager reviewing a CV for the general job market.
-        
-        Your response MUST be ONLY a single, valid JSON object and nothing else.
-        The JSON object must have these exact keys and data types:
-        - "overall_score": An integer between 0 and 100.
-        - "summary": A string containing a concise 2-3 sentence summary.
-        - "suggestions": An array of 3 to 5 strings, each being an actionable suggestion.
-        - "keyword_analysis": A string explaining keyword usage.
-
-        CV Text:
-        ---
-        {cv_text}
-        ---
-        """
+        prompt = f"""تصرف كخبير تدريب مهني ومدير موارد بشرية. حلل نص السيرة الذاتية التالي بعناية. يجب أن تكون إجابتك عبارة عن كائن JSON صالح واحد فقط. يجب أن يحتوي كائن JSON على هذه المفاتيح: "overall_score", "summary", "suggestions", "keyword_analysis". نص السيرة الذاتية: --- {cv_text} ---"""
+    else:
+        prompt = f"""Act as an expert career coach and HR manager. Analyze the following CV text. Your response MUST be ONLY a single, valid JSON object with these keys: "overall_score", "summary", "suggestions", "keyword_analysis". CV Text: --- {cv_text} ---"""
 
     try:
         response = model.generate_content(prompt)
@@ -115,60 +86,83 @@ def analyze_cv():
             raise ValueError("No valid JSON object found in AI response.")
         clean_json_str = raw_text[json_start:json_end]
         parsed_json = json.loads(clean_json_str)
-        # --- NEW: Also return the original CV text for the PDF generator ---
-        parsed_json['original_cv_text'] = cv_text
         return jsonify(parsed_json)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred during analysis: {e}")
         if 'raw_text' in locals():
             print(f"--- Full AI Response Was ---\n{raw_text}\n---")
         return jsonify({"error": "AI analysis failed."}), 500
 
-# --- NEW: API Endpoint for PDF Generation ---
 @app.route("/api/generate-pdf", methods=["POST"])
 def generate_pdf():
-    data = request.get_json()
-    summary = data.get('summary', 'No summary provided.')
-    suggestions = data.get('suggestions', [])
-    
-    # --- PDF Creation Logic using FPDF ---
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Add a Unicode font that supports a wide range of characters
-    pdf.add_font('DejaVu', '', 'DejaVuSans.ttf', uni=True)
-    pdf.set_font('DejaVu', '', 16)
-    
-    # Title
-    pdf.cell(0, 10, 'Your New CV based on AI Analysis', 0, 1, 'C')
-    pdf.ln(10)
-    
-    # Professional Summary
-    pdf.set_font('DejaVu', '', 14)
-    pdf.cell(0, 10, 'Professional Summary', 0, 1)
-    pdf.set_font('DejaVu', '', 12)
-    pdf.multi_cell(0, 10, summary)
-    pdf.ln(10)
-    
-    # Actionable Suggestions as bullet points
-    pdf.set_font('DejaVu', '', 14)
-    pdf.cell(0, 10, 'Key Improvements Incorporated:', 0, 1)
-    pdf.set_font('DejaVu', '', 12)
-    for suggestion in suggestions:
-        # Using a simple dash as a bullet point
-        pdf.multi_cell(0, 10, f'- {suggestion}')
+    try:
+        data = request.get_json()
+        summary = data.get('summary', 'No summary provided.')
+        suggestions = data.get('suggestions', [])
+        
+        pdf = FPDF()
+        pdf.add_page()
+        
+        # Check for font file. This is crucial for deployment.
+        font_path = 'DejaVuSans.ttf'
+        if not os.path.exists(font_path):
+             print(f"FATAL ERROR: Font file not found at path: {font_path}")
+             return jsonify({"error": "Server is missing a required font file for PDF generation."}), 500
+        
+        pdf.add_font('DejaVu', '', font_path, uni=True)
+        
+        pdf.set_font('DejaVu', '', 16)
+        pdf.cell(0, 10, 'Your AI-Generated CV Insights', 0, 1, 'C')
+        pdf.ln(10)
+        
+        pdf.set_font('DejaVu', '', 14)
+        pdf.cell(0, 10, 'Professional Summary', 0, 1)
+        pdf.set_font('DejaVu', '', 12)
+        pdf.multi_cell(0, 8, summary) # Reduced line height for more space
+        pdf.ln(10)
+        
+        pdf.set_font('DejaVu', '', 14)
+        pdf.cell(0, 10, 'Key Improvements Incorporated:', 0, 1)
+        pdf.set_font('DejaVu', '', 12)
+        for suggestion in suggestions:
+            # This try-except block prevents a crash if one line fails.
+            try:
+                pdf.multi_cell(0, 8, f'- {suggestion}') # Reduced line height
+            except Exception as e:
+                print(f"Warning: Could not render line in PDF: {suggestion}. Error: {e}")
+                # We can choose to write a placeholder or just skip it.
+                pdf.multi_cell(0, 8, f'- (Could not render one suggestion due to its length)')
 
-    # Create PDF in memory
-    pdf_output = pdf.output(dest='S').encode('latin-1')
-    
-    return send_file(
-        io.BytesIO(pdf_output),
-        mimetype='application/pdf',
-        as_attachment=True,
-        download_name='Careeri_Generated_CV.pdf'
-    )
-
+        pdf_output_bytes = pdf.output(dest='S').encode('latin-1')
+        
+        return send_file(
+            io.BytesIO(pdf_output_bytes),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name='Careeri_Generated_CV.pdf'
+        )
+    except Exception as e:
+        print(f"FATAL error in PDF generation: {e}")
+        return jsonify({"error": "An unexpected error occurred while generating the PDF."}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+```
+
+#### **Step 3: The Final Upload**
+
+Now, we send this definitive fix to GitHub.
+
+1.  Open your **Command Prompt** terminal in VS Code (in the main `cv-doctor` folder).
+2.  Run these three commands one by one:
+
+    ```cmd
+    git add .
+    ```
+    ```cmd
+    git commit -m "fix: Add robust error handling to PDF generation"
+    ```
+    ```cmd
+    git push
+    
 
