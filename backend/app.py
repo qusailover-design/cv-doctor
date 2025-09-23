@@ -18,7 +18,6 @@ try:
     model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
 except Exception as e:
     print(f"FATAL: Could not configure GenerativeModel. Is GOOGLE_API_KEY set? Error: {e}")
-    # We don't exit here, but the model will be None, causing endpoints to fail gracefully.
     model = None
 
 app = Flask(__name__)
@@ -103,7 +102,6 @@ def generate_pdf():
         pdf = FPDF()
         pdf.add_page()
         
-        # Check for font file. This is crucial for deployment.
         font_path = 'DejaVuSans.ttf'
         if not os.path.exists(font_path):
              print(f"FATAL ERROR: Font file not found at path: {font_path}")
@@ -118,19 +116,17 @@ def generate_pdf():
         pdf.set_font('DejaVu', '', 14)
         pdf.cell(0, 10, 'Professional Summary', 0, 1)
         pdf.set_font('DejaVu', '', 12)
-        pdf.multi_cell(0, 8, summary) # Reduced line height for more space
+        pdf.multi_cell(0, 8, summary)
         pdf.ln(10)
         
         pdf.set_font('DejaVu', '', 14)
         pdf.cell(0, 10, 'Key Improvements Incorporated:', 0, 1)
         pdf.set_font('DejaVu', '', 12)
         for suggestion in suggestions:
-            # This try-except block prevents a crash if one line fails.
             try:
-                pdf.multi_cell(0, 8, f'- {suggestion}') # Reduced line height
+                pdf.multi_cell(0, 8, f'- {suggestion}')
             except Exception as e:
                 print(f"Warning: Could not render line in PDF: {suggestion}. Error: {e}")
-                # We can choose to write a placeholder or just skip it.
                 pdf.multi_cell(0, 8, f'- (Could not render one suggestion due to its length)')
 
         pdf_output_bytes = pdf.output(dest='S').encode('latin-1')
@@ -149,18 +145,21 @@ if __name__ == "__main__":
     app.run(debug=True, port=5000)
 ```
 
-#### **Step 3: The Final Upload**
+---
 
-Now, we send this definitive fix to GitHub.
+### **Step 2: The Final Upload**
 
-1.  Open your **Command Prompt** terminal in VS Code (in the main `cv-doctor` folder).
-2.  Run these three commands one by one:
+Now we will send this final, correct code to GitHub.
+
+1.  Open your **Command Prompt** terminal in VS Code.
+2.  Make sure you are in the main `cv-doctor` folder.
+3.  Run these three commands one by one:
 
     ```cmd
     git add .
     ```
     ```cmd
-    git commit -m "fix: Add robust error handling to PDF generation"
+    git commit -m "fix: Final attempt to fix syntax error in app.py"
     ```
     ```cmd
     git push
