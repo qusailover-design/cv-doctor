@@ -1,303 +1,237 @@
+Got it 👍 I’ll give you a **single enhanced `index.html`** with:
+
+* Current design intact.
+* New **Enhance CV + Download PDF** flow added.
+* Uses `marked.js` to render enhanced CV markdown.
+* Uses `html2pdf.js` to export to PDF (no server dependencies).
+
+Here’s the full code (ready to replace your existing `index.html`):
+
+```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="title">Careeri.ai | AI CV & Job Matcher</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', 'Cairo', sans-serif; scroll-behavior: smooth; background-color: #FDFBF8; color: #1a202c; }
-        .rtl-font { font-family: 'Cairo', sans-serif; }
-        .ltr-font { font-family: 'Inter', sans-serif; }
-        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 320px; max-height: 400px; }
-        @media (min-width: 768px) { .chart-container { height: 400px; } }
-        .btn-active { background-color: #0d9488 !important; color: white !important; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-key="title">Careeri.ai | AI CV & Job Matcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter','Cairo',sans-serif; scroll-behavior: smooth; background-color: #FDFBF8; color: #1a202c; }
+    .rtl-font { font-family: 'Cairo', sans-serif; }
+    .ltr-font { font-family: 'Inter', sans-serif; }
+    .chart-container { position: relative; width: 100%; max-width: 600px; margin: auto; height: 320px; max-height: 400px; }
+    @media (min-width: 768px) { .chart-container { height: 400px; } }
+    .btn-active { background-color: #0d9488 !important; color: white !important; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),0 2px 4px -2px rgb(0 0 0 / 0.1); }
+  </style>
 </head>
 <body class="bg-[#FDFBF8]">
 
-    <header class="sticky top-0 bg-[#FDFBF8]/80 backdrop-blur-sm z-50 shadow-sm">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-teal-700" data-key="brandName">Careeri.<span class="text-amber-500">ai</span></a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#features" class="text-gray-600 hover:text-teal-600" data-key="navFeatures">Features</a>
-                <a href="#dashboard" class="text-gray-600 hover:text-teal-600" data-key="navDashboard">Market Insights</a>
-                <a href="#pricing" class="text-gray-600 hover:text-teal-600" data-key="navPricing">Pricing</a>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button id="lang-toggle" class="text-sm font-semibold text-gray-500 hover:text-teal-600 px-3 py-1 border rounded-full">
-                    <span class="lang-en">العربية</span>
-                    <span class="lang-ar hidden">English</span>
-                </button>
-                <a href="#" class="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors" data-key="navCTA">Get Started</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <section id="hero" class="container mx-auto px-6 py-16 md:py-24 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-4 text-gray-800" data-key="heroTitle">Land Your Dream Job, Faster</h1>
-            <p class="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto mb-8" data-key="heroSubtitle">Our AI analyzes your CV, enhances it for employers, and matches you with the perfect job opportunities. Freemium services available.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button id="upload-btn" class="bg-teal-600 text-white px-8 py-4 rounded-full hover:bg-teal-700 transition-transform transform hover:scale-105 shadow-lg" data-key="heroCTA">AI CV Doctor Analysis (Free)</button>
-                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.docx">
-                <a href="#features" class="bg-white text-teal-600 px-8 py-4 rounded-full border border-teal-200 hover:bg-teal-50 transition-transform transform hover:scale-105 shadow-lg" data-key="heroSecondaryCTA">Learn More</a>
-            </div>
-        </section>
-        
-        <section id="dashboard" class="bg-white py-16 md:py-24">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="dashboardTitle">Live Job Market Insights</h2>
-                    <p class="text-gray-500 mt-2" data-key="dashboardSubtitle">Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform.</p>
-                </div>
-                <div class="bg-slate-50 p-6 rounded-lg shadow-inner">
-                     <div class="flex justify-center flex-wrap gap-2 mb-8">
-                        <button class="filter-btn btn-active px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="all" data-key="filterAll">All Sectors</button>
-                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="tech" data-key="filterTech">Tech & IT</button>
-                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="health" data-key="filterHealth">Healthcare</button>
-                        <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="finance" data-key="filterFinance">Finance</button>
-                    </div>
-                    <div class="grid lg:grid-cols-2 gap-8">
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart1Title">Top In-Demand Industries</h3>
-                            <div class="chart-container"><canvas id="industriesChart"></canvas></div>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart2Title">Jobs by Experience Level</h3>
-                            <div class="chart-container"><canvas id="experienceChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="pricing" class="py-16 md:py-24">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="pricingTitle">Choose Your Plan</h2>
-                    <p class="text-gray-500 mt-2" data-key="pricingSubtitle">Start for free and upgrade for more advanced features.</p>
-                </div>
-                <div class="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <div class="border-2 border-teal-500 rounded-xl p-8 flex flex-col relative bg-white">
-                        <h3 class="text-2xl font-bold text-teal-700" data-key="plan1Name">Freemium</h3>
-                        <p class="text-gray-500 mb-4" data-key="plan1Desc">Perfect for getting started.</p>
-                        <p class="text-4xl font-bold mb-6" data-key="plan1Price">Free</p>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat1">Basic AI CV Score</span></li>
-                            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat2">General CV Suggestions</span></li>
-                        </ul>
-                        <a href="#hero" class="w-full text-center bg-teal-600 text-white font-bold py-3 rounded-full hover:bg-teal-700" data-key="plan1CTA">Get Started Now</a>
-                    </div>
-                    <div class="border border-gray-200 rounded-xl p-8 flex flex-col opacity-60">
-                         <span class="absolute top-0 -translate-y-1/2 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-key="plan2Popular">Coming Soon</span>
-                        <h3 class="text-2xl font-bold" data-key="plan2Name">Premium</h3>
-                        <p class="text-gray-500 mb-4" data-key="plan2Desc">Unlock your full potential.</p>
-                        <p class="text-4xl font-bold mb-6" data-key="plan2Price">$10 <span class="text-lg font-normal text-gray-500" data-key="plan2Cycle">/ month</span></p>
-                        <ul class="space-y-3 mb-8 flex-grow">
-                            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat1">Detailed AI Analysis</span></li>
-                            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat2">Unlimited Job Matches</span></li>
-                            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat3">Tailored Keyword Suggestions</span></li>
-                            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat4">Application Tracking</span></li>
-                        </ul>
-                        <button class="w-full text-center bg-gray-200 text-gray-500 font-bold py-3 rounded-full cursor-not-allowed" data-key="plan2CTA" disabled>Coming Soon</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-    
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="container mx-auto px-6 text-center"><p data-key="footerText">&copy; 2025 Careeri.ai. All rights reserved.</p></div>
-    </footer>
-
-    <!-- Results Modal -->
-    <div id="results-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center p-6 border-b border-gray-200">
-                <h2 class="text-2xl font-bold text-gray-800" data-key="modalTitle">Your CV Analysis</h2>
-                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
-            </div>
-            <div id="modal-content" class="p-8">
-                <div id="loading-spinner" class="text-center py-12">
-                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-teal-500"></div>
-                    <p class="mt-4 text-gray-600" data-key="modalLoading">Our AI is analyzing your CV...</p>
-                </div>
-                <div id="analysis-results" class="hidden">
-                    <div class="text-center mb-8"><p class="text-gray-500 text-lg" data-key="modalScore">Overall Score</p><p id="overall-score" class="text-7xl font-bold text-teal-600"></p></div>
-                    <div class="space-y-6">
-                        <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSummary">Professional Summary</h3><p id="summary-text" class="text-gray-600 bg-gray-50 p-4 rounded-lg"></p></div>
-                        <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSuggestions">Actionable Suggestions</h3><ul id="suggestions-list" class="list-disc list-inside space-y-2 text-gray-600 pl-4"></ul></div>
-                    </div>
-                </div>
-                <div id="error-message" class="hidden text-center py-12">
-                    <p class="text-red-600 font-bold text-xl" data-key="modalErrorTitle">An Error Occurred</p><p id="error-text" class="text-gray-600 mt-2"></p>
-                </div>
-            </div>
-        </div>
+<header class="sticky top-0 bg-[#FDFBF8]/80 backdrop-blur-sm z-50 shadow-sm">
+  <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="#" class="text-2xl font-bold text-teal-700" data-key="brandName">Careeri.<span class="text-amber-500">ai</span></a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="#features" class="text-gray-600 hover:text-teal-600" data-key="navFeatures">Features</a>
+      <a href="#dashboard" class="text-gray-600 hover:text-teal-600" data-key="navDashboard">Market Insights</a>
+      <a href="#pricing" class="text-gray-600 hover:text-teal-600" data-key="navPricing">Pricing</a>
     </div>
+    <div class="flex items-center space-x-4">
+      <button id="lang-toggle" class="text-sm font-semibold text-gray-500 hover:text-teal-600 px-3 py-1 border rounded-full">
+        <span class="lang-en">العربية</span><span class="lang-ar hidden">English</span>
+      </button>
+      <a href="#" class="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors" data-key="navCTA">Get Started</a>
+    </div>
+  </nav>
+</header>
 
-    <script>
-        const translations = {
-            en: {
-                title: 'Careeri.ai | AI CV & Job Matcher',
-                brandName: 'Careeri.<span class="text-amber-500">ai</span>',
-                navFeatures: 'Features', navDashboard: 'Market Insights', navPricing: 'Pricing', navCTA: 'Get Started',
-                heroTitle: 'Land Your Dream Job, Faster',
-                heroSubtitle: 'Our AI analyzes your CV, enhances it for employers, and matches you with the perfect job opportunities. Freemium services available.',
-                heroCTA: 'AI CV Doctor Analysis (Free)',
-                heroSecondaryCTA: 'Learn More',
-                dashboardTitle: 'Live Job Market Insights',
-                dashboardSubtitle: 'Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform.',
-                filterAll: 'All Sectors', filterTech: 'Tech & IT', filterHealth: 'Healthcare', filterFinance: 'Finance',
-                chart1Title: 'Top In-Demand Industries', chart2Title: 'Jobs by Experience Level',
-                pricingTitle: 'Choose Your Plan',
-                pricingSubtitle: 'Start for free and upgrade for more advanced features.',
-                plan1Name: 'Freemium', plan1Desc: 'Perfect for getting started.', plan1Price: 'Free',
-                plan1Feat1: 'Basic AI CV Score', plan1Feat2: 'General CV Suggestions', plan1CTA: 'Get Started Now',
-                plan2Popular: 'Coming Soon', plan2Name: 'Premium', plan2Desc: 'Unlock your full potential.', plan2Price: '$10', plan2Cycle: '/ month',
-                plan2Feat1: 'Detailed AI Analysis', plan2Feat2: 'Unlimited Job Matches', plan2Feat3: 'Tailored Keyword Suggestions', plan2Feat4: 'Application Tracking', plan2CTA: 'Coming Soon',
-                footerText: '&copy; 2025 Careeri.ai. All rights reserved.',
-                modalTitle: 'Your CV Analysis', modalLoading: 'Our AI is analyzing your CV...', modalScore: 'Overall Score',
-                modalSummary: 'Professional Summary', modalSuggestions: 'Actionable Suggestions',
-                modalErrorTitle: 'An Error Occurred'
-            },
-            ar: {
-                title: 'Careeri.ai | مدقق السيرة الذاتية ومطابق الوظائف',
-                brandName: 'Careeri.<span class="text-amber-500">ai</span>',
-                navFeatures: 'الميزات', navDashboard: 'بيانات السوق', navPricing: 'الأسعار', navCTA: 'ابدأ الآن',
-                heroTitle: 'احصل على وظيفة أحلامك، بشكل أسرع',
-                heroSubtitle: 'يقوم الذكاء الاصطناعي لدينا بتحليل سيرتك الذاتية، وتحسينها لأصحاب العمل، ومطابقتك مع أفضل فرص العمل.',
-                heroCTA: 'تحليل السيرة الذاتية بالذكاء الاصطناعي (مجانًا)',
-                heroSecondaryCTA: 'اعرف المزيد',
-                dashboardTitle: 'بيانات حية لسوق العمل',
-                dashboardSubtitle: 'استكشف البيانات في الوقت الفعلي لاتخاذ قرارات مهنية مستنيرة. تعرض لوحة التحكم هذه قوتنا التحليلية.',
-                filterAll: 'جميع القطاعات', filterTech: 'التكنولوجيا', filterHealth: 'الرعاية الصحية', filterFinance: 'المالية',
-                chart1Title: 'أكثر الصناعات طلبًا', chart2Title: 'الوظائف حسب الخبرة',
-                pricingTitle: 'اختر خطتك',
-                pricingSubtitle: 'ابدأ مجانًا وقم بالترقية للحصول على ميزات متقدمة.',
-                plan1Name: 'مجانية', plan1Desc: 'مثالية للبدء.', plan1Price: 'مجاني',
-                plan1Feat1: 'تقييم أساسي للسيرة الذاتية', plan1Feat2: 'اقتراحات عامة للسيرة الذاتية', plan1CTA: 'ابدأ الآن',
-                plan2Popular: 'قريبًا', plan2Name: 'الاحترافية', plan2Desc: 'أطلق العنان لإمكانياتك الكاملة.', plan2Price: '10$', plan2Cycle: '/ شهر',
-                plan2Feat1: 'تحليل مفصل بالذكاء الاصطناعي', plan2Feat2: 'مطابقات وظائف غير محدودة', plan2Feat3: 'اقتراحات كلمات مفتاحية مخصصة', plan2Feat4: 'تتبع طلبات التوظيف', plan2CTA: 'قريبًا',
-                footerText: '© 2025 Careeri.ai. جميع الحقوق محفوظة.',
-                modalTitle: 'تحليل سيرتك الذاتية', modalLoading: 'يقوم الذكاء الاصطناعي بتحليل سيرتك الذاتية...', modalScore: 'التقييم العام',
-                modalSummary: 'الملخص المهني', modalSuggestions: 'اقتراحات قابلة للتنفيذ',
-                modalErrorTitle: 'حدث خطأ'
-            }
-        };
-        let currentLang = 'en';
-        let industriesChart, experienceChart;
-        const langToggle = document.getElementById('lang-toggle');
-        const htmlEl = document.documentElement;
-        
-        const setLanguage = (lang) => {
-            currentLang = lang;
-            htmlEl.lang = lang;
-            htmlEl.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            document.body.className = `bg-[#FDFBF8] ${lang === 'ar' ? 'rtl-font' : 'ltr-font'}`;
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if (translations[lang][key]) el.innerHTML = translations[lang][key];
-            });
-            document.querySelector('.lang-en').classList.toggle('hidden', lang === 'ar');
-            document.querySelector('.lang-ar').classList.toggle('hidden', lang !== 'ar');
-        };
+<main>
+  <!-- Hero -->
+  <section id="hero" class="container mx-auto px-6 py-16 md:py-24 text-center">
+    <h1 class="text-4xl md:text-6xl font-bold mb-4 text-gray-800" data-key="heroTitle">Land Your Dream Job, Faster</h1>
+    <p class="text-lg md:text-xl text-gray-500 max-w-3xl mx-auto mb-8" data-key="heroSubtitle">Our AI analyzes your CV, enhances it for employers, and matches you with the perfect job opportunities. Freemium services available.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <button id="upload-btn" class="bg-teal-600 text-white px-8 py-4 rounded-full hover:bg-teal-700 transition-transform transform hover:scale-105 shadow-lg" data-key="heroCTA">AI CV Doctor Analysis (Free)</button>
+      <input type="file" id="cv-upload" class="hidden" accept=".pdf,.docx">
+      <a href="#features" class="bg-white text-teal-600 px-8 py-4 rounded-full border border-teal-200 hover:bg-teal-50 transition-transform transform hover:scale-105 shadow-lg" data-key="heroSecondaryCTA">Learn More</a>
+    </div>
+  </section>
 
-        langToggle.addEventListener('click', () => setLanguage(currentLang === 'en' ? 'ar' : 'en'));
-        
-        const marketData = { all: { industries: { labels: ['IT & Software', 'Healthcare', 'Banking & Finance', 'Engineering', 'Education'], data: [28, 22, 18, 15, 10] }, experience: { labels: ['Entry-Level (0-2)', 'Mid-Level (2-5)', 'Senior (5+)', 'Managerial'], data: [45, 30, 18, 7] } }, tech: { industries: { labels: ['Software Dev', 'Cybersecurity', 'Data Science', 'Cloud Computing', 'UI/UX Design'], data: [35, 25, 20, 12, 8] }, experience: { labels: ['Entry-Level', 'Mid-Level', 'Senior', 'Lead/Architect'], data: [40, 35, 20, 5] } }, health: { industries: { labels: ['Nursing', 'Pharmacy', 'Medical Tech', 'Specialist Dr.', 'Administration'], data: [30, 25, 18, 15, 12] }, experience: { labels: ['Junior/Resident', 'Practitioner', 'Senior', 'Consultant'], data: [35, 40, 15, 10] } }, finance: { industries: { labels: ['Accounting', 'Financial Analysis', 'Investment Banking', 'Auditing', 'FinTech'], data: [32, 28, 15, 13, 12] }, experience: { labels: ['Junior Analyst', 'Analyst', 'Senior Analyst', 'Manager'], data: [40, 30, 20, 10] } } };
-        const chartColors = { bg: ['#14b8a6', '#f97316', '#3b82f6', '#8b5cf6', '#ec4899'], border: '#ffffff' };
-        const chartOptions = () => ({ responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } });
-        
-        const initCharts = () => {
-            const industriesCtx = document.getElementById('industriesChart')?.getContext('2d');
-            if(industriesCtx) industriesChart = new Chart(industriesCtx, { type: 'bar', data: { labels: marketData.all.industries.labels, datasets: [{ label: 'Job Openings', data: marketData.all.industries.data, backgroundColor: chartColors.bg }] }, options: chartOptions() });
-            const experienceCtx = document.getElementById('experienceChart')?.getContext('2d');
-            if(experienceCtx) experienceChart = new Chart(experienceCtx, { type: 'doughnut', data: { labels: marketData.all.experience.labels, datasets: [{ label: 'Job Distribution', data: marketData.all.experience.data, backgroundColor: chartColors.bg }] }, options: chartOptions() });
-        };
-        
-        document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('btn-active'));
-                button.classList.add('btn-active');
-                const filter = button.getAttribute('data-filter');
-                const data = marketData[filter];
-                if (industriesChart) { industriesChart.data.labels = data.industries.labels; industriesChart.data.datasets[0].data = data.industries.data; industriesChart.update(); }
-                if (experienceChart) { experienceChart.data.labels = data.experience.labels; experienceChart.data.datasets[0].data = data.experience.data; experienceChart.update(); }
-            });
-        });
-        
-        const uploadBtn = document.getElementById('upload-btn');
-        const cvUploadInput = document.getElementById('cv-upload');
-        const resultsModal = document.getElementById('results-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const analysisResults = document.getElementById('analysis-results');
-        const errorMessage = document.getElementById('error-message');
+  <!-- Dashboard -->
+  <section id="dashboard" class="bg-white py-16 md:py-24">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="dashboardTitle">Live Job Market Insights</h2>
+        <p class="text-gray-500 mt-2" data-key="dashboardSubtitle">Explore real-time data to make informed career decisions. This interactive dashboard showcases the analytical power of our platform.</p>
+      </div>
+      <div class="bg-slate-50 p-6 rounded-lg shadow-inner">
+        <div class="flex justify-center flex-wrap gap-2 mb-8">
+          <button class="filter-btn btn-active px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="all" data-key="filterAll">All Sectors</button>
+          <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="tech" data-key="filterTech">Tech & IT</button>
+          <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="health" data-key="filterHealth">Healthcare</button>
+          <button class="filter-btn px-4 py-2 text-sm font-semibold rounded-full bg-white text-gray-700 border border-gray-200" data-filter="finance" data-key="filterFinance">Finance</button>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart1Title">Top In-Demand Industries</h3>
+            <div class="chart-container"><canvas id="industriesChart"></canvas></div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-md">
+            <h3 class="text-xl font-bold mb-4 text-center text-gray-700" data-key="chart2Title">Jobs by Experience Level</h3>
+            <div class="chart-container"><canvas id="experienceChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        const API_URL = 'https://cv-doctor-backend.onrender.com/api/analyze';
+  <!-- Pricing -->
+  <section id="pricing" class="py-16 md:py-24">
+    <div class="container mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800" data-key="pricingTitle">Choose Your Plan</h2>
+        <p class="text-gray-500 mt-2" data-key="pricingSubtitle">Start for free and upgrade for more advanced features.</p>
+      </div>
+      <div class="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div class="border-2 border-teal-500 rounded-xl p-8 flex flex-col relative bg-white">
+          <h3 class="text-2xl font-bold text-teal-700" data-key="plan1Name">Freemium</h3>
+          <p class="text-gray-500 mb-4" data-key="plan1Desc">Perfect for getting started.</p>
+          <p class="text-4xl font-bold mb-6" data-key="plan1Price">Free</p>
+          <ul class="space-y-3 mb-8 flex-grow">
+            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat1">Basic AI CV Score</span></li>
+            <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat2">General CV Suggestions</span></li>
+          </ul>
+          <a href="#hero" class="w-full text-center bg-teal-600 text-white font-bold py-3 rounded-full hover:bg-teal-700" data-key="plan1CTA">Get Started Now</a>
+        </div>
+        <div class="border border-gray-200 rounded-xl p-8 flex flex-col opacity-60">
+          <span class="absolute top-0 -translate-y-1/2 bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full" data-key="plan2Popular">Coming Soon</span>
+          <h3 class="text-2xl font-bold" data-key="plan2Name">Premium</h3>
+          <p class="text-gray-500 mb-4" data-key="plan2Desc">Unlock your full potential.</p>
+          <p class="text-4xl font-bold mb-6" data-key="plan2Price">$10 <span class="text-lg font-normal text-gray-500" data-key="plan2Cycle">/ month</span></p>
+          <ul class="space-y-3 mb-8 flex-grow">
+            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat1">Detailed AI Analysis</span></li>
+            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat2">Unlimited Job Matches</span></li>
+            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat3">Tailored Keyword Suggestions</span></li>
+            <li class="flex items-center"><span class="text-gray-400 mr-2">✔</span><span data-key="plan2Feat4">Application Tracking</span></li>
+          </ul>
+          <button class="w-full text-center bg-gray-200 text-gray-500 font-bold py-3 rounded-full cursor-not-allowed" data-key="plan2CTA" disabled>Coming Soon</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-        uploadBtn.addEventListener('click', () => cvUploadInput.click());
-        cvUploadInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) analyzeCV(file);
-            e.target.value = null;
-        });
+<footer class="bg-gray-800 text-white py-12">
+  <div class="container mx-auto px-6 text-center"><p data-key="footerText">&copy; 2025 Careeri.ai. All rights reserved.</p></div>
+</footer>
 
-        async function analyzeCV(file) {
-            resultsModal.classList.remove('hidden');
-            loadingSpinner.classList.remove('hidden');
-            analysisResults.classList.add('hidden');
-            errorMessage.classList.add('hidden');
+<!-- Modal -->
+<div id="results-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl transform transition-all max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center p-6 border-b border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-800" data-key="modalTitle">Your CV Analysis</h2>
+      <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 text-3xl leading-none">&times;</button>
+    </div>
+    <div id="modal-content" class="p-8">
+      <div id="loading-spinner" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-teal-500"></div>
+        <p class="mt-4 text-gray-600" data-key="modalLoading">Our AI is analyzing your CV...</p>
+      </div>
+      <div id="analysis-results" class="hidden">
+        <div class="text-center mb-8">
+          <p class="text-gray-500 text-lg" data-key="modalScore">Overall Score</p>
+          <p id="overall-score" class="text-7xl font-bold text-teal-600"></p>
+        </div>
+        <div class="space-y-6">
+          <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSummary">Professional Summary</h3><p id="summary-text" class="text-gray-600 bg-gray-50 p-4 rounded-lg"></p></div>
+          <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSuggestions">Actionable Suggestions</h3><ul id="suggestions-list" class="list-disc list-inside space-y-2 text-gray-600 pl-4"></ul></div>
+        </div>
+      </div>
+      <div id="enhance-controls" class="hidden mt-10 border-t pt-8">
+        <h3 class="text-xl font-bold text-gray-700 mb-4" data-key="modalEnhance">Enhance & Export</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="block text-sm font-semibold text-gray-600 mb-1">Target Role</label><input id="target-role" type="text" class="w-full border rounded-lg p-3" placeholder="e.g., Data Analyst"></div>
+          <div><label class="block text-sm font-semibold text-gray-600 mb-1">Tone</label>
+            <select id="tone" class="w-full border rounded-lg p-3">
+              <option>Professional and concise</option><option>Impactful and leadership-focused</option><option>Technical and detail-oriented</option>
+            </select></div>
+          <div class="md:col-span-2"><label class="block text-sm font-semibold text-gray-600 mb-1">Job Description (optional)</label><textarea id="job-desc" rows="4" class="w-full border rounded-lg p-3" placeholder="Paste JD"></textarea></div>
+        </div>
+        <div class="mt-4 flex gap-3">
+          <button id="enhance-btn" class="bg-teal-600 text-white px-5 py-3 rounded-full hover:bg-teal-700">Enhance CV</button>
+          <button id="download-pdf-btn" class="bg-gray-200 text-gray-700 px-5 py-3 rounded-full hover:bg-gray-300" disabled>Download PDF</button>
+        </div>
+        <div id="enhanced-cv-preview" class="mt-8 hidden bg-white p-6 rounded-lg border"></div>
+      </div>
+      <div id="error-message" class="hidden text-center py-12">
+        <p class="text-red-600 font-bold text-xl" data-key="modalErrorTitle">An Error Occurred</p><p id="error-text" class="text-gray-600 mt-2"></p>
+      </div>
+    </div>
+  </div>
+</div>
 
-            const formData = new FormData();
-            formData.append('cv', file);
-            formData.append('lang', currentLang);
+<script>
+let currentLang = 'en';
+let industriesChart, experienceChart;
+let lastUploadedFile = null;
+let enhancedMarkdown = '';
+let enhancedSuggestedFilename = 'Careeri_Enhanced_CV.pdf';
 
-            try {
-                const response = await fetch(API_URL, { method: 'POST', body: formData });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Server error');
-                displayResults(data);
-            } catch (error) {
-                displayError(error.message);
-            }
-        }
+const API_URL = 'https://cv-doctor-backend.onrender.com/api/analyze';
+const ENHANCE_URL = 'https://cv-doctor-backend.onrender.com/api/enhance';
 
-        function displayResults(data) {
-            document.getElementById('overall-score').textContent = data.overall_score || 'N/A';
-            document.getElementById('summary-text').textContent = data.summary || 'No summary.';
-            const suggestionsList = document.getElementById('suggestions-list');
-            suggestionsList.innerHTML = '';
-            if (data.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
-                data.suggestions.forEach(suggestion => {
-                    const li = document.createElement('li');
-                    li.textContent = suggestion;
-                    suggestionsList.appendChild(li);
-                });
-            } else {
-                suggestionsList.innerHTML = '<li>No suggestions provided.</li>';
-            }
-            loadingSpinner.classList.add('hidden');
-            analysisResults.classList.remove('hidden');
-        }
+const uploadBtn = document.getElementById('upload-btn');
+const cvUploadInput = document.getElementById('cv-upload');
+const resultsModal = document.getElementById('results-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const loadingSpinner = document.getElementById('loading-spinner');
+const analysisResults = document.getElementById('analysis-results');
+const errorMessage = document.getElementById('error-message');
 
-        function displayError(message) {
-            document.getElementById('error-text').textContent = message;
-            loadingSpinner.classList.add('hidden');
-            errorMessage.classList.remove('hidden');
-        }
+uploadBtn.addEventListener('click', () => cvUploadInput.click());
+cvUploadInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) { lastUploadedFile = file; analyzeCV(file); }
+  e.target.value = null;
+});
 
-        closeModalBtn.addEventListener('click', () => resultsModal.classList.add('hidden'));
-        resultsModal.addEventListener('click', (e) => { if (e.target === resultsModal) resultsModal.classList.add('hidden'); });
+async function analyzeCV(file) {
+  resultsModal.classList.remove('hidden');
+  loadingSpinner.classList.remove('hidden');
+  analysisResults.classList.add('hidden');
+  errorMessage.classList.add('hidden');
 
-        window.onload = () => { initCharts(); setLanguage('en'); };
-    </script>
-</body>
-</html>
+  const formData = new FormData();
+  formData.append('cv', file);
+  formData.append('lang', currentLang);
 
+  try {
+    const response = await fetch(API_URL, { method: 'POST', body: formData });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Server error');
+    displayResults(data);
+  } catch (error) { displayError(error.message); }
+}
+
+function displayResults(data) {
+  document.getElementById('overall-score').textContent = data.overall_score ?? 'N/A';
+  document.getElementById('summary-text').textContent = data.summary || 'No summary.';
+  const suggestionsList = document.getElementById('suggestions-list');
+  suggestionsList.innerHTML = '';
+  if (Array.isArray(data.suggestions) && data.suggestions.length) {
+    data.suggestions.forEach(s => { const li = document.createElement('li'); li.textContent = s; suggestionsList.appendChild(li); });
+  } else { suggestionsList.innerHTML = '<li>No suggestions provided.</li>'; }
+  loadingSpinner.classList.add('hidden');
+  analysisResults.classList.remove('hidden');
+  document.getElementById('enhance-controls').classList.remove('hidden');
+}
+
+function displayError(msg) {
+  document.getElementById('error-text').textContent = msg;
+  loadingSpinner.classList.add('hidden');
+  errorMessage.class
+```
