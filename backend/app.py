@@ -10,7 +10,7 @@ import PyPDF2
 from docx import Document
 
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
 app = Flask(__name__)
 CORS(app)
