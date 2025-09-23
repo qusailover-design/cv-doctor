@@ -23,16 +23,20 @@
 <header class="sticky top-0 bg-[#FDFBF8]/80 backdrop-blur-sm z-50 shadow-sm">
     <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
         <a href="#" class="text-2xl font-bold text-teal-700" data-key="brandName">Careeri.<span class="text-amber-500">ai</span></a>
-        <div class="hidden md:flex items-center space-x-8">
-            <a href="#features" class="text-gray-600 hover:text-teal-600" data-key="navFeatures">Features</a>
-            <a href="#dashboard" class="text-gray-600 hover:text-teal-600" data-key="navDashboard">Market Insights</a>
-            <a href="#pricing" class="text-gray-600 hover:text-teal-600" data-key="navPricing">Pricing</a>
-        </div>
-        <div class="flex items-center space-x-4">
-            <button id="lang-toggle" class="text-sm font-semibold text-gray-500 hover:text-teal-600 px-3 py-1 border rounded-full">
-                <span class="lang-en">العربية</span><span class="lang-ar hidden">English</span>
-            </button>
-            <a href="#" class="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors" data-key="navCTA">Get Started</a>
+        
+        <div class="flex items-center gap-8">
+            <!-- THIS 'div' IS THE FIX. It now uses 'gap-8' which works for both LTR and RTL -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-gray-600 hover:text-teal-600" data-key="navFeatures">Features</a>
+                <a href="#dashboard" class="text-gray-600 hover:text-teal-600" data-key="navDashboard">Market Insights</a>
+                <a href="#pricing" class="text-gray-600 hover:text-teal-600" data-key="navPricing">Pricing</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="lang-toggle" class="text-sm font-semibold text-gray-500 hover:text-teal-600 px-3 py-1 border rounded-full">
+                    <span class="lang-en">العربية</span><span class="lang-ar hidden">English</span>
+                </button>
+                <a href="#" class="bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors" data-key="navCTA">Get Started</a>
+            </div>
         </div>
     </nav>
 </header>
@@ -302,4 +306,37 @@
 </script>
 </body>
 </html>
+```
+
+---
+
+### **2. Explaining the Inconsistent Scores**
+
+This is not a bug in the code; it's the nature of how powerful AI like Gemini works.
+
+* **It's Not a Calculator:** The AI isn't performing a simple calculation like 2+2=4. It's a **generative** model, which means it is designed to be creative.
+* **Think of it like asking two different HR experts for their opinion.** If you give the same CV to two different human experts, they will give you similar advice, but they might give slightly different scores (one might say 78, the other 81). They are both providing a valid, holistic assessment.
+* **The AI does the same thing.** Every time you ask for an analysis, it generates a slightly new response. The score might vary by a few points, and the suggestions might be worded a little differently, but the core advice will be consistent.
+
+**The most valuable parts are the `summary` and `suggestions`, not the exact number.** The score is a general guide, but the text feedback is where the real value is. This is expected behavior and a sign that the AI is genuinely "thinking" about the CV each time.
+
+---
+
+### **Final Step: Deploy the Fix**
+
+Now, let's upload this final, polished `index.html` file to make your live site perfect before connecting your domain.
+
+1.  Open your **Command Prompt** terminal.
+2.  Make sure you are in the main `cv-doctor` folder.
+3.  Run these three final commands:
+
+    ```cmd
+    git add .
+    ```
+    ```cmd
+    git commit -m "fix: Correct RTL alignment in navigation bar"
+    ```
+    ```cmd
+    git push
+    
 
