@@ -1,18 +1,16 @@
-# app.py - The final, robust backend application file
+# app.py - A simplified, stable version without the PDF feature.
 import os
 import io
 import json
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
 import PyPDF2
 from docx import Document
-from fpdf import FPDF
 
 load_dotenv()
 
-# --- Configuration ---
 try:
     genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
     model = genai.GenerativeModel('gemini-2.5-flash-preview-05-20')
@@ -23,7 +21,6 @@ except Exception as e:
 app = Flask(__name__)
 CORS(app)
 
-# --- Helper Functions ---
 def extract_text_from_pdf(file_stream):
     try:
         reader = PyPDF2.PdfReader(file_stream)
@@ -42,7 +39,6 @@ def extract_text_from_docx(file_stream):
         print(f"Error reading DOCX: {e}")
         return ""
 
-# --- API Endpoints ---
 @app.route("/api/analyze", methods=["POST"])
 def analyze_cv():
     if model is None:
@@ -92,76 +88,6 @@ def analyze_cv():
             print(f"--- Full AI Response Was ---\n{raw_text}\n---")
         return jsonify({"error": "AI analysis failed."}), 500
 
-@app.route("/api/generate-pdf", methods=["POST"])
-def generate_pdf():
-    try:
-        data = request.get_json()
-        summary = data.get('summary', 'No summary provided.')
-        suggestions = data.get('suggestions', [])
-        
-        pdf = FPDF()
-        pdf.add_page()
-        
-        font_path = 'DejaVuSans.ttf'
-        if not os.path.exists(font_path):
-             print(f"FATAL ERROR: Font file not found at path: {font_path}")
-             return jsonify({"error": "Server is missing a required font file for PDF generation."}), 500
-        
-        pdf.add_font('DejaVu', '', font_path, uni=True)
-        
-        pdf.set_font('DejaVu', '', 16)
-        pdf.cell(0, 10, 'Your AI-Generated CV Insights', 0, 1, 'C')
-        pdf.ln(10)
-        
-        pdf.set_font('DejaVu', '', 14)
-        pdf.cell(0, 10, 'Professional Summary', 0, 1)
-        pdf.set_font('DejaVu', '', 12)
-        pdf.multi_cell(0, 8, summary)
-        pdf.ln(10)
-        
-        pdf.set_font('DejaVu', '', 14)
-        pdf.cell(0, 10, 'Key Improvements Incorporated:', 0, 1)
-        pdf.set_font('DejaVu', '', 12)
-        for suggestion in suggestions:
-            try:
-                pdf.multi_cell(0, 8, f'- {suggestion}')
-            except Exception as e:
-                print(f"Warning: Could not render line in PDF: {suggestion}. Error: {e}")
-                pdf.multi_cell(0, 8, f'- (Could not render one suggestion due to its length)')
-
-        pdf_output_bytes = pdf.output(dest='S').encode('latin-1')
-        
-        return send_file(
-            io.BytesIO(pdf_output_bytes),
-            mimetype='application/pdf',
-            as_attachment=True,
-            download_name='Careeri_Generated_CV.pdf'
-        )
-    except Exception as e:
-        print(f"FATAL error in PDF generation: {e}")
-        return jsonify({"error": "An unexpected error occurred while generating the PDF."}), 500
-
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-```
-
----
-
-### **Step 2: The Final Upload**
-
-Now we will send this final, correct code to GitHub.
-
-1.  Open your **Command Prompt** terminal in VS Code.
-2.  Make sure you are in the main `cv-doctor` folder.
-3.  Run these three commands one by one:
-
-    ```cmd
-    git add .
-    ```
-    ```cmd
-    git commit -m "fix: Final attempt to fix syntax error in app.py"
-    ```
-    ```cmd
-    git push
-    
 

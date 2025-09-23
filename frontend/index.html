@@ -90,7 +90,6 @@
                         <ul class="space-y-3 mb-8 flex-grow">
                             <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat1">Basic AI CV Score</span></li>
                             <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat2">General CV Suggestions</span></li>
-                             <li class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span data-key="plan1Feat3">AI-Generated CV (PDF)</span></li>
                         </ul>
                         <a href="#hero" class="w-full text-center bg-teal-600 text-white font-bold py-3 rounded-full hover:bg-teal-700" data-key="plan1CTA">Get Started Now</a>
                     </div>
@@ -134,10 +133,6 @@
                         <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSummary">Professional Summary</h3><p id="summary-text" class="text-gray-600 bg-gray-50 p-4 rounded-lg"></p></div>
                         <div><h3 class="text-xl font-bold text-gray-700 mb-2" data-key="modalSuggestions">Actionable Suggestions</h3><ul id="suggestions-list" class="list-disc list-inside space-y-2 text-gray-600 pl-4"></ul></div>
                     </div>
-                    <!-- NEW PDF Button -->
-                    <div class="mt-8 text-center">
-                        <button id="generate-pdf-btn" class="bg-amber-500 text-white px-8 py-3 rounded-full hover:bg-amber-600 transition-transform transform hover:scale-105 shadow-lg" data-key="buildCV">Build My New CV (PDF)</button>
-                    </div>
                 </div>
                 <div id="error-message" class="hidden text-center py-12">
                     <p class="text-red-600 font-bold text-xl" data-key="modalErrorTitle">An Error Occurred</p><p id="error-text" class="text-gray-600 mt-2"></p>
@@ -163,13 +158,13 @@
                 pricingTitle: 'Choose Your Plan',
                 pricingSubtitle: 'Start for free and upgrade for more advanced features.',
                 plan1Name: 'Freemium', plan1Desc: 'Perfect for getting started.', plan1Price: 'Free',
-                plan1Feat1: 'Basic AI CV Score', plan1Feat2: 'General CV Suggestions', plan1Feat3: 'AI-Generated CV (PDF)', plan1CTA: 'Get Started Now',
+                plan1Feat1: 'Basic AI CV Score', plan1Feat2: 'General CV Suggestions', plan1CTA: 'Get Started Now',
                 plan2Popular: 'Coming Soon', plan2Name: 'Premium', plan2Desc: 'Unlock your full potential.', plan2Price: '$10', plan2Cycle: '/ month',
                 plan2Feat1: 'Detailed AI Analysis', plan2Feat2: 'Unlimited Job Matches', plan2Feat3: 'Tailored Keyword Suggestions', plan2Feat4: 'Application Tracking', plan2CTA: 'Coming Soon',
                 footerText: '&copy; 2025 Careeri.ai. All rights reserved.',
                 modalTitle: 'Your CV Analysis', modalLoading: 'Our AI is analyzing your CV...', modalScore: 'Overall Score',
-                modalSummary: 'Professional Summary', modalSuggestions: 'Actionable Suggestions', modalKeywords: 'Keyword Analysis',
-                modalErrorTitle: 'An Error Occurred', buildCV: 'Build My New CV (PDF)'
+                modalSummary: 'Professional Summary', modalSuggestions: 'Actionable Suggestions',
+                modalErrorTitle: 'An Error Occurred'
             },
             ar: {
                 title: 'Careeri.ai | مدقق السيرة الذاتية ومطابق الوظائف',
@@ -186,18 +181,17 @@
                 pricingTitle: 'اختر خطتك',
                 pricingSubtitle: 'ابدأ مجانًا وقم بالترقية للحصول على ميزات متقدمة.',
                 plan1Name: 'مجانية', plan1Desc: 'مثالية للبدء.', plan1Price: 'مجاني',
-                plan1Feat1: 'تقييم أساسي للسيرة الذاتية', plan1Feat2: 'اقتراحات عامة للسيرة الذاتية', plan1Feat3: 'سيرة ذاتية منشأة بالذكاء الاصطناعي (PDF)', plan1CTA: 'ابدأ الآن',
+                plan1Feat1: 'تقييم أساسي للسيرة الذاتية', plan1Feat2: 'اقتراحات عامة للسيرة الذاتية', plan1CTA: 'ابدأ الآن',
                 plan2Popular: 'قريبًا', plan2Name: 'الاحترافية', plan2Desc: 'أطلق العنان لإمكانياتك الكاملة.', plan2Price: '10$', plan2Cycle: '/ شهر',
                 plan2Feat1: 'تحليل مفصل بالذكاء الاصطناعي', plan2Feat2: 'مطابقات وظائف غير محدودة', plan2Feat3: 'اقتراحات كلمات مفتاحية مخصصة', plan2Feat4: 'تتبع طلبات التوظيف', plan2CTA: 'قريبًا',
                 footerText: '© 2025 Careeri.ai. جميع الحقوق محفوظة.',
                 modalTitle: 'تحليل سيرتك الذاتية', modalLoading: 'يقوم الذكاء الاصطناعي بتحليل سيرتك الذاتية...', modalScore: 'التقييم العام',
-                modalSummary: 'الملخص المهني', modalSuggestions: 'اقتراحات قابلة للتنفيذ', modalKeywords: 'تحليل الكلمات المفتاحية',
-                modalErrorTitle: 'حدث خطأ', buildCV: 'أنشئ سيرتي الذاتية الجديدة (PDF)'
+                modalSummary: 'الملخص المهني', modalSuggestions: 'اقتراحات قابلة للتنفيذ',
+                modalErrorTitle: 'حدث خطأ'
             }
         };
         let currentLang = 'en';
         let industriesChart, experienceChart;
-        let lastAnalysisData = {};
         const langToggle = document.getElementById('lang-toggle');
         const htmlEl = document.documentElement;
         
@@ -245,10 +239,8 @@
         const loadingSpinner = document.getElementById('loading-spinner');
         const analysisResults = document.getElementById('analysis-results');
         const errorMessage = document.getElementById('error-message');
-        const generatePdfBtn = document.getElementById('generate-pdf-btn');
 
         const API_URL = 'https://cv-doctor-backend.onrender.com/api/analyze';
-        const PDF_API_URL = 'https://cv-doctor-backend.onrender.com/api/generate-pdf';
 
         uploadBtn.addEventListener('click', () => cvUploadInput.click());
         cvUploadInput.addEventListener('change', (e) => {
@@ -278,7 +270,6 @@
         }
 
         function displayResults(data) {
-            lastAnalysisData = data;
             document.getElementById('overall-score').textContent = data.overall_score || 'N/A';
             document.getElementById('summary-text').textContent = data.summary || 'No summary.';
             const suggestionsList = document.getElementById('suggestions-list');
@@ -301,40 +292,6 @@
             loadingSpinner.classList.add('hidden');
             errorMessage.classList.remove('hidden');
         }
-
-        generatePdfBtn.addEventListener('click', async () => {
-            generatePdfBtn.textContent = 'Building...';
-            generatePdfBtn.disabled = true;
-
-            try {
-                const response = await fetch(PDF_API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        summary: lastAnalysisData.summary,
-                        suggestions: lastAnalysisData.suggestions
-                    }),
-                });
-                if (!response.ok) throw new Error('PDF generation failed.');
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'Careeri_Generated_CV.pdf';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                a.remove();
-
-            } catch (error) {
-                alert('An error occurred while generating the PDF.');
-            } finally {
-                generatePdfBtn.textContent = translations[currentLang].buildCV;
-                generatePdfBtn.disabled = false;
-            }
-        });
 
         closeModalBtn.addEventListener('click', () => resultsModal.classList.add('hidden'));
         resultsModal.addEventListener('click', (e) => { if (e.target === resultsModal) resultsModal.classList.add('hidden'); });
